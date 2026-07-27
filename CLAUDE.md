@@ -4,20 +4,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository overview
 
-This is a static GitHub Pages site (`davidkazuhiro.github.io`) served directly from the repository root via GitHub Pages. There is no build system, package manager, framework, or test suite — the repository consists of raw static files that GitHub Pages serves as-is.
+This is a personal profile site (`davidkazuhiro.github.io`) built with Jekyll and served via GitHub Pages, which builds it automatically on every push — no CI pipeline or separate deploy step. Content is authored in Markdown and rendered through Jekyll (GitHub Pages' native static site generator), not hand-written HTML.
 
-- `index.html` — the site's single page.
-- `CNAME` — configures the custom domain (`david.somers-harris.com`) for GitHub Pages.
+- `index.md` — the site's content (bio + social links), as Markdown with YAML front matter (`title`, `tagline`, `location`).
+- `_config.yml` — Jekyll site config. Sets `theme: null` deliberately — the site uses a fully custom layout/CSS, not a gem-based theme (the `github-pages` gem defaults to `jekyll-theme-primer` if this isn't set, which pulls in a stylesheet that fails to compile locally). `README.md`, `CLAUDE.md`, and Ruby tooling files are excluded from the build via `exclude:`.
+- `_layouts/default.html` — the single layout. Renders `page.title`/`page.tagline`/`page.location` as a header, then `{{ content }}` (the rendered Markdown body).
+- `assets/css/style.css` — all styling: CSS custom properties for a light/dark palette (`prefers-color-scheme`), one indigo accent color, Shippori Mincho for the name and Noto Sans JP for body text.
+- `CNAME` — configures the custom domain (`david.somers-harris.com`).
+- `Gemfile` — pins the `github-pages` gem so local builds use the same Jekyll/plugin versions as GitHub Pages' production build.
+
+To add a link/button styled consistently with the existing ones, use kramdown's inline attribute list syntax on a normal Markdown link: `[Label](url){:.link-btn target="_blank" rel="noopener"}` — this keeps content in Markdown rather than dropping into raw HTML.
 
 ## Development workflow
 
-There are no build, lint, or test commands — none are configured, and none are needed. Edit HTML/CSS/JS files directly and commit.
+Requires Ruby + Bundler. This repo pins Ruby via `.ruby-version`-less rbenv setup — if `jekyll`/`bundle exec jekyll` reports "command not found" after `bundle install`, check `rbenv version` isn't pointing at a Ruby without the gems installed (`rbenv local <version>` to pin one, then `rbenv rehash`).
 
-To preview changes locally, open `index.html` directly in a browser, or serve the directory with any static file server (e.g. `python3 -m http.server`) and visit `http://localhost:8000`.
+```sh
+bundle install                 # first time / after Gemfile changes
+bundle exec jekyll serve       # local preview at http://localhost:4000, rebuilds on change
+bundle exec jekyll build       # one-off build into _site/
+```
 
-Changes take effect on the live site automatically once pushed to the default branch, via GitHub Pages' built-in deployment — there is no separate deploy step or CI pipeline in this repository.
+There are no lint or test commands configured.
+
+Changes take effect on the live site automatically once pushed to the default branch — GitHub Pages runs its own Jekyll build server-side.
 
 ## Conventions
 
-- Keep the site as plain static files (HTML/CSS/JS) unless the user explicitly asks to introduce a framework or build tooling.
+- Keep content changes in Markdown (`index.md` and any future pages) rather than editing generated HTML or reaching for raw `<div>`/`<a>` blocks when a styled Markdown link will do.
+- Theme/design changes belong in `_layouts/default.html` and `assets/css/style.css`. Don't introduce a JS framework or client-side build step unless explicitly asked — this is meant to stay a plain Jekyll site.
+- Single accent color (indigo) design language against a neutral light/dark background — keep new UI elements consistent with that rather than introducing new colors.
 - If the custom domain changes, update `CNAME` (single line, no protocol, e.g. `example.com`).
