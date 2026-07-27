@@ -1,0 +1,16 @@
+title: David Somers-Harris
+description: "Vice President, Japan Regional Lead of Observability at Nomura — Tokyo, Japan"
+lang: en
+theme: null
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+exclude:
+  - README.md
+  - CLAUDE.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
